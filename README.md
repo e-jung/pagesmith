@@ -36,10 +36,13 @@ open books/demo/index.html        # placeholders show until art is added
 
 # Exports + image prep (optional):
 npm install && npx playwright install chromium
-npm run prep     # raw generator art -> normalized images/page-NN.png (de-batches grids)
-npm run png      # render every page -> dist/png/page-NN.png  (also how an agent "looks")
-npm run pdf      # -> dist/demo.pdf  (print-ready flip-through)
+npm run pdf -- books/demo     # -> dist/demo.pdf  (print-ready flip-through)
+npm run png -- books/demo     # -> dist/demo-png/page-NN.png  (also how an agent "looks")
+npm run validate -- books/demo   # check book data before exporting
+npm run new-book -- <slug>        # scaffold a new book from the demo template
 ```
+All `npm run` book commands accept a bare slug (`demo`), a dir (`books/demo`),
+or an HTML path; with no argument they list available books and prompt.
 
 ## How a book is built
 ```
@@ -48,22 +51,27 @@ engine/                 reusable, book-agnostic
   render.js             paints pages from inlined JSON (browser, no build)
   export-pdf.mjs        HTML -> print-ready PDF (Playwright)
   export-png.mjs        each page -> PNG (Playwright)
+  validate-book.mjs     checks book data: schema, page order, image refs
+  lib/                  shared CLI helpers (arg resolution, book-data, browser launch)
 tools/
   prep-images.mjs       de-batch grid sheets, trim captions, scrub watermarks,
                         normalize to one full-bleed canvas (config: art-sources.json)
+  new-book.mjs          scaffold a new book from books/demo/
 books/demo/
   index.html            SOURCE OF TRUTH: pages as inlined JSON + links to engine
   book.css              this book's palette
   images/               page-NN.png (placeholders until real art drops in)
+tests/                  node:test suite (render, validate, cli, export, new-book)
 AGENTS.md               how an agent authors/edits a book here
 ```
 Text and layout are deterministic and editable today. Plug your own image model
 into `images/` — the engine doesn't care which one.
 
 ## Make your own book
-Copy `books/demo/` to `books/<your-slug>/`, replace the JSON pages, and add art.
-Keep your books in their own (private, if you like) repo and vendor or depend on
-this engine — see `AGENTS.md`.
+`npm run new-book -- <slug>` scaffolds from `books/demo/`: it copies the template,
+rewrites the title, and empties `images/`. Then edit the JSON pages. Keep your
+books in their own (private, if you like) repo and vendor or depend on this
+engine — see `AGENTS.md`.
 
 ## The agent review loop
 Because pages are real HTML, an agent can **render → look → fix → re-render**: run
@@ -81,7 +89,7 @@ Replicate / local ComfyUI) by editing the one `generate()` function.
 - [ ] Character consistency recipe (ComfyUI + IP-Adapter) — same character across pages
 - [x] `tools/gen-images.mjs` — generate full-res art from a free/hosted endpoint
 - [ ] Second template: `comic` (panel-grid pages + speech bubbles)
-- [ ] `pagesmith new <slug>` scaffolding command
+- [x] `npm run new-book <slug>` scaffolding command
 - [ ] Spread (two-page) layouts + print bleed/trim presets
 - [ ] Bundled OFL handwriting font (offline, no Google Fonts dependency)
 

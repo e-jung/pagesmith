@@ -25,12 +25,24 @@
  */
 import sharp from 'sharp';
 import { readFile, readdir, mkdir } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
 import { join } from 'node:path';
+import { requireBookArg } from '../engine/lib/cli.mjs';
 
-const bookDir = process.argv[2];
-if (!bookDir) { console.error('usage: prep-images.mjs books/<slug>'); process.exit(1); }
+//   node tools/prep-images.mjs books/<slug>
+//   npm run prep -- books/<slug>
+// No arg -> list books / prompt (see engine/lib/cli.mjs).
+const { bookDir } = await requireBookArg(process.argv.slice(2));
 
-const cfg = JSON.parse(await readFile(join(bookDir, 'art-sources.json'), 'utf8'));
+const cfgPath = join(bookDir, 'art-sources.json');
+if (!existsSync(cfgPath)) {
+  console.error(
+    `✗ No art-sources.json in ${bookDir}.\n` +
+      `  prep-images is for books with an art pipeline; the demo book has none.`,
+  );
+  process.exit(1);
+}
+const cfg = JSON.parse(await readFile(cfgPath, 'utf8'));
 const { w: W, h: H } = cfg.canvas;
 const dirs = cfg.sourceDirs || [cfg.sourceDir];
 const watermarks = cfg.watermarks || {}; // keyed "WxH": { box:[x,y,w,h] }

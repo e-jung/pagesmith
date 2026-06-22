@@ -6,12 +6,16 @@
   "license": "Apache-2.0",
   "scripts": {
     "serve": "npx --yes serve .",
-    "prep": "node tools/prep-images.mjs books/demo",
+    "prep": "node tools/prep-images.mjs",
     "gen": "node tools/gen-images.mjs books/demo",
-    "pdf": "node engine/export-pdf.mjs books/demo/index.html dist/demo.pdf",
-    "png": "node engine/export-png.mjs books/demo/index.html dist/png"
+    "pdf": "node engine/export-pdf.mjs",
+    "png": "node engine/export-png.mjs",
+    "validate": "node engine/validate-book.mjs",
+    "new-book": "node tools/new-book.mjs",
+    "test": "node --test"
   },
   "devDependencies": {
+    "jsdom": "^25.0.1",
     "playwright": "^1.48.0",
     "sharp": "^0.35.2"
   }
