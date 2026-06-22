@@ -1,0 +1,5 @@
+/* Demo book — palette overrides on top of engine/base.css */
+:root {
+  --pw-page-w: 960px;
+  --pw-page-h: 540px;
+}

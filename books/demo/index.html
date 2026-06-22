@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pagesmith Demo</title>
+  <link rel="stylesheet" href="../../engine/base.css" />
+  <link rel="stylesheet" href="./book.css" />
+</head>
+<body>
+  <!--
+    A book is just this: an inlined JSON block of pages + links to the engine.
+    Edit a page's `text` to reword it, `pos` to move the text, drop art into
+    ./images/page-NN.png to replace a placeholder. Open this file in a browser.
+      pos:  center | top | bottom | sky | left | right | wavy
+      text: \n\n = new paragraph, inline <em>/<span class="shout"> ok
+  -->
+  <script type="application/json" id="book-data">
+{
+  "title": "The Little Demo",
+  "author": "Built with Pagesmith",
+  "pages": [
+    { "n": 1, "kind": "cover", "image": "images/page-01.png", "pos": "center",
+      "title": "The Little Demo", "subtitle": "a Pagesmith sample book",
+      "art": "A friendly cover illustration goes here." },
+    { "n": 2, "kind": "story", "image": "images/page-02.png", "pos": "sky",
+      "text": "This is a page of a Pagesmith book.\n\nThe words are real HTML text — edit them, move them, restyle them.",
+      "art": "Whatever this page is about." },
+    { "n": 3, "kind": "story", "image": "images/page-03.png", "pos": "center",
+      "text": "Drop art into <em>images/</em> and it appears here.\n\n<span class=\"shout\">That's it!</span>",
+      "art": "A closing illustration." }
+  ]
+}
+  </script>
+
+  <script src="../../engine/render.js"></script>
+</body>
+</html>

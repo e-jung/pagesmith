@@ -1,0 +1,17 @@
+{
+  "name": "pagesmith",
+  "version": "0.1.0",
+  "description": "An agent-native authoring engine for illustrated books. The book is an HTML document agents edit directly; rendering and image generation are separate, swappable steps. Like hyperframes, but for books instead of video.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "scripts": {
+    "serve": "npx --yes serve .",
+    "prep": "node tools/prep-images.mjs books/demo",
+    "pdf": "node engine/export-pdf.mjs books/demo/index.html dist/demo.pdf",
+    "png": "node engine/export-png.mjs books/demo/index.html dist/png"
+  },
+  "devDependencies": {
+    "playwright": "^1.48.0",
+    "sharp": "^0.35.2"
+  }
+}
