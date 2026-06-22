@@ -60,7 +60,8 @@ async function generate(prompt, seed, outPath, tries = 3) {
   }
 }
 
-const pages = book.pages.filter((p) => p.image && (!only || only.includes(p.n)));
+// generate for pages that own an image; skip matter (no image) and back (reuses another page's art)
+const pages = book.pages.filter((p) => p.image && p.kind !== 'back' && (!only || only.includes(p.n)));
 let ok = 0;
 for (const p of pages) {
   const subject = p.art || p.title || 'a gentle storybook scene';
