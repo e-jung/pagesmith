@@ -34,6 +34,7 @@ const [W, H] = sizeFlag?.length === 2 ? sizeFlag : (gen.size || [1280, 720]);
 const model = gen.model || 'flux';
 const style = gen.style || '';
 const seedBase = Number(flag('--seed')) || (gen.seedBase ?? 1000);
+const fixedSeed = gen.fixedSeed; // if set, every page uses this one seed (helps character consistency)
 const outDir = flag('--out') || join(bookDir, 'images');
 
 const html = await readFile(join(bookDir, 'index.html'), 'utf8');
@@ -60,15 +61,17 @@ async function generate(prompt, seed, outPath, tries = 3) {
   }
 }
 
-// generate for pages that own an image; skip matter (no image) and back (reuses another page's art)
-const pages = book.pages.filter((p) => p.image && p.kind !== 'back' && (!only || only.includes(p.n)));
+// generate for pages that own an image; skip matter (no image) and back (reuses another page's art).
+// a full run skips pages marked "lock": true (approved art); --only can still force-regen any page.
+const pages = book.pages.filter((p) =>
+  p.image && p.kind !== 'back' && (only ? only.includes(p.n) : !p.lock));
 let ok = 0;
 for (const p of pages) {
   const subject = p.art || p.title || 'a gentle storybook scene';
   const prompt = `${subject}. ${style}`;
   const outPath = join(outDir, `page-${String(p.n).padStart(2, '0')}.png`);
   try {
-    const sz = await generate(prompt, seedBase + p.n, outPath);
+    const sz = await generate(prompt, fixedSeed ?? (seedBase + p.n), outPath);
     ok++;
     console.log(`page ${p.n}: ok (${(sz / 1024).toFixed(0)} KB)`);
   } catch (e) {
