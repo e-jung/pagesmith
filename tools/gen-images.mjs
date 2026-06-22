@@ -21,6 +21,9 @@
 import sharp from 'sharp';
 import { readFile, mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+const execFileP = promisify(execFile);
 
 const bookDir = process.argv[2];
 if (!bookDir) { console.error('usage: gen-images.mjs books/<slug> [--backend gemini] [--reference img] [--only n,n]'); process.exit(1); }
@@ -82,11 +85,28 @@ async function genGemini(prompt) {
   return Buffer.from((out.inline_data || out.inlineData).data, 'base64');
 }
 
+// --- backend: Gemini via Oracle browser mode (free, uses your gemini.google.com session) ---
+// Conditions on --reference via Oracle's --file, so characters stay on-model. ~30s/image.
+async function genBrowser(prompt) {
+  const model = gen.model?.startsWith('gemini') ? gen.model : 'gemini-3.1-pro';
+  const full = `${prompt}.` + (refPath
+    ? ' Keep the same characters and exact art style as the attached reference image.' : '') +
+    ' No text, no words, no labels, no captions in the image.';
+  const tmp = `/tmp/pw-${Date.now()}-${Math.random().toString(36).slice(2)}.png`;
+  const a = ['-y', '@steipete/oracle', '--engine', 'browser', '--model', model,
+    '--prompt', full, '--generate-image', tmp, '--aspect', gen.aspectRatio || '16:9'];
+  if (refPath) a.push('--file', refPath);
+  await execFileP('npx', a, { timeout: 300000, maxBuffer: 16 * 1024 * 1024 });
+  return await readFile(tmp); // Oracle wrote the image here
+}
+
 // retry + normalize to canvas
 async function generate(prompt, seed, outPath, tries = 3) {
   for (let a = 1; a <= tries; a++) {
     try {
-      const buf = backend === 'gemini' ? await genGemini(prompt) : await genPollinations(prompt, seed);
+      const buf = backend === 'gemini' ? await genGemini(prompt)
+        : backend === 'browser' ? await genBrowser(prompt)
+        : await genPollinations(prompt, seed);
       await sharp(buf).resize(W, H, { fit: 'cover' }).png().toFile(outPath);
       return buf.length;
     } catch (e) {
@@ -101,7 +121,7 @@ async function generate(prompt, seed, outPath, tries = 3) {
 const pages = book.pages.filter((p) =>
   p.image && p.kind !== 'back' && (only ? only.includes(p.n) : !p.lock));
 
-console.log(`backend: ${backend}${backend === 'gemini' ? (refB64 ? ` (reference: ${refPath})` : ' (no reference!)') : ''}`);
+console.log(`backend: ${backend}${refPath ? ` (reference: ${refPath})` : (backend !== 'pollinations' ? ' (no reference)' : '')}`);
 let ok = 0;
 for (const p of pages) {
   const subject = p.art || p.title || 'a gentle storybook scene';
