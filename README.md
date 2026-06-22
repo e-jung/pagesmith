@@ -70,9 +70,16 @@ Because pages are real HTML, an agent can **render → look → fix → re-rende
 `npm run png`, view the PNGs, adjust `pos-*`/wording/CSS per page, re-render. No
 regeneration, no dice.
 
+## Generating art
+`tools/gen-images.mjs` generates one full-res image per page from each page's art
+direction in a locked style, via a free keyless FLUX endpoint (Pollinations) — no
+batching, no watermark. Configure the `gen` block in `art-sources.json` (model,
+style, size, seedBase) and run `npm run gen`. Swap in a keyed backend (fal.ai /
+Replicate / local ComfyUI) by editing the one `generate()` function.
+
 ## Roadmap
 - [ ] Character consistency recipe (ComfyUI + IP-Adapter) — same character across pages
-- [ ] `tools/gen-images.mjs` — generate full-res art from a hosted FLUX API
+- [x] `tools/gen-images.mjs` — generate full-res art from a free/hosted endpoint
 - [ ] Second template: `comic` (panel-grid pages + speech bubbles)
 - [ ] `pagesmith new <slug>` scaffolding command
 - [ ] Spread (two-page) layouts + print bleed/trim presets
