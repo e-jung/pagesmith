@@ -21,14 +21,21 @@ whole book to fix one page.
 
 ## Preview & export
 - Preview: open `books/<slug>/index.html` in a browser (no build, no server).
-- PDF (print target): `npm run pdf`.   PNGs: `npm run png`.
+- PDF (print target): `npm run pdf -- books/<slug>`. PNGs: `npm run png -- books/<slug>`.
+  - A bare slug (`demo`), a dir (`books/demo`), or an HTML path all work.
+  - No argument lists available books and prompts (or lists + exits if non-interactive).
+  - Output defaults to `dist/<slug>.pdf` and `dist/<slug>-png/`; pass a second arg to override.
+- Validate a book before exporting: `npm run validate -- books/<slug>`. Catches bad
+  `pos`, non-sequential page numbers, empty pages, etc. Exports run this automatically.
 - Exports are render targets — generate them at the end, never edit them.
 
 ## The one stochastic step
 Image generation is the only non-deterministic part, and it's **quarantined** in
 `images/`. A page you like stays liked; regenerating art never disturbs the words
-or layout. See `books/three-little-trees/images/README.md`.
+or layout. (A book with an art pipeline keeps an `art-sources.json` for
+`npm run prep`; the demo book does not — it ships placeholders.)
 
 ## Starting a new book
-Copy `books/three-little-trees/` to `books/<new-slug>/`, replace the JSON pages,
-empty `images/`. Everything in `engine/` is reused unchanged.
+Run `npm run new-book -- <slug>` to scaffold from `books/demo/`: it copies the
+template, rewrites the title to the slug, and empties `images/`. Then edit the
+JSON pages. Everything in `engine/` is reused unchanged.
