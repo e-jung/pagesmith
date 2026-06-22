@@ -63,8 +63,8 @@
   }
 
   function placeholder(pg) {
-    // cover/title get a clean wash (CSS gradient) — no art-direction caption behind the title
-    if (pg.kind === 'cover' || pg.kind === 'title') return '';
+    // cover/title/matter/back get a clean styled background — no art-direction caption
+    if (['cover', 'title', 'matter', 'back'].includes(pg.kind)) return '';
     return `<div class="page__placeholder"><span>${esc(pg.art || 'art goes here')}` +
       `<small>page ${pg.n} — drop ${pg.image || 'an image'} to replace</small></span></div>`;
   }

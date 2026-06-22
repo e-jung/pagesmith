@@ -29,7 +29,8 @@ const only = flag('--only')?.split(',').map(Number);
 
 const cfg = JSON.parse(await readFile(join(bookDir, 'art-sources.json'), 'utf8'));
 const gen = cfg.gen || {};
-const [W, H] = gen.size || [1280, 720];
+const sizeFlag = flag('--size')?.split('x').map(Number); // e.g. --size 2048x1152 for print res
+const [W, H] = sizeFlag?.length === 2 ? sizeFlag : (gen.size || [1280, 720]);
 const model = gen.model || 'flux';
 const style = gen.style || '';
 const seedBase = gen.seedBase ?? 1000;
@@ -59,7 +60,7 @@ async function generate(prompt, seed, outPath, tries = 3) {
   }
 }
 
-const pages = book.pages.filter((p) => !only || only.includes(p.n));
+const pages = book.pages.filter((p) => p.image && (!only || only.includes(p.n)));
 let ok = 0;
 for (const p of pages) {
   const subject = p.art || p.title || 'a gentle storybook scene';

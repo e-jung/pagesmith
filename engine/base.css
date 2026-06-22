@@ -114,9 +114,18 @@ body {
 .page--cover, .page--title {
   background: linear-gradient(160deg, #cfe6f5 0%, #eaf3e0 55%, #f3ead4 100%);
 }
-.page--cover .page__text,
+/* cover: a designed title card (warm inset frame + soft shadow) */
+.page--cover .page__text {
+  background: rgba(253, 248, 239, 0.88);
+  backdrop-filter: blur(2px);
+  border-radius: 20px;
+  max-width: 74%;
+  padding: 28px 46px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18), inset 0 0 0 2px rgba(154, 59, 46, 0.38);
+}
+/* title page: lighter, no frame */
 .page--title .page__text {
-  background: rgba(253, 248, 239, 0.55);
+  background: rgba(253, 248, 239, 0.5);
   backdrop-filter: blur(2px);
   box-shadow: none;
   max-width: 80%;
@@ -126,8 +135,25 @@ body {
   font-size: 56px; line-height: 1.05; margin: 0 0 0.4em;
   text-shadow: 0 2px 8px rgba(255, 255, 255, 0.9), 0 1px 0 #fff;
 }
-.page--cover .page__title { font-size: 68px; }
+.page--cover .page__title { font-size: 74px; margin-bottom: 0.5em; }
 .page__subtitle { font-size: 26px; opacity: 0.82; }
+.page--cover .page__subtitle { font-size: 27px; opacity: 0.9; }
+
+/* ---- front/back matter (text-only pages: copyright, dedication, back cover) ---- */
+.page--matter { background: var(--pw-page-bg); }
+.page--matter .page__text {
+  background: transparent; box-shadow: none; backdrop-filter: none;
+  max-width: 74%; font-size: 18px; line-height: 1.6; text-align: center;
+}
+.page--matter .page__text strong { font-size: 1.3em; }
+
+.page--back { background: linear-gradient(160deg, #cfe6f5 0%, #eaf3e0 55%, #f3ead4 100%); }
+.page--back .page__text {
+  background: rgba(255, 255, 255, 0.78); backdrop-filter: blur(2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14); border-radius: 18px;
+  max-width: 74%; font-size: 22px; line-height: 1.5; text-align: center;
+}
+.page--back .page__text strong { font-size: 1.25em; color: #9a3b2e; }
 
 @media print {
   @page { size: var(--pw-page-w) var(--pw-page-h); margin: 0; }
