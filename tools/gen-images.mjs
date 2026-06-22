@@ -33,7 +33,7 @@ const sizeFlag = flag('--size')?.split('x').map(Number); // e.g. --size 2048x115
 const [W, H] = sizeFlag?.length === 2 ? sizeFlag : (gen.size || [1280, 720]);
 const model = gen.model || 'flux';
 const style = gen.style || '';
-const seedBase = gen.seedBase ?? 1000;
+const seedBase = Number(flag('--seed')) || (gen.seedBase ?? 1000);
 const outDir = flag('--out') || join(bookDir, 'images');
 
 const html = await readFile(join(bookDir, 'index.html'), 'utf8');
